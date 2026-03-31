@@ -1,2 +1,0 @@
-git config --global user.name "向东"
-git config --global user.email "peng1104406230@gmail.com"

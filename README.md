@@ -1,89 +1,125 @@
-<div align="center">
+# Study Buddy
 
-# 🚀 think2do
+一款帮你克服拖延、从「想学」到「开始学」的 AI 学习督促 App。
 
-### 把脑洞，变成现实。
+Study Buddy 不会帮你制定复杂的学习计划，它只做一件事：**在你不想学的时候，温柔地推你一把。**
 
-*We don't just talk about AI — we build weird stuff with it.*
+## 功能
 
-</div>
+### AI 对话引导
+选择你当前的状态（不想动 / 迷茫 / 有点累 / 可以开始），AI 会根据你的状态用朋友聊天的语气引导你开始学习。支持自由文字对话，最多 3 轮。
 
----
+### 5 分钟启动法
+不要求你学 1 小时，只要求你做 5 分钟。大多数时候，开始之后你会发现没那么难。
 
-## 嘿，这里是什么地方？
+### 学习中模式
+完成 5 分钟后可以选择「继续学习」，App 会进入后台计时模式，记录你的学习时长。随时可以结束。
 
-think2do 是一群 AI 狂热者自发聚集的地方。
+### 向上之路
+每次开始学习都会在登山轨迹上留下一个脚印。看着脚印越来越多，你会发现自己其实一直在前进。
 
-没有 KPI，没有路线图，没有"这个不切实际"。
+### 设置
+随时修改学习目标、最小启动动作和提醒时间。
 
-只有一件事：**你有个关于 AI 的想法，我们一起把它做出来。**
+## 截图
 
-可以是一个小工具、一个荒唐的实验、一个"不知道有没有用但感觉很酷"的项目——都行。
+| 首页 | AI 对话 | 专注计时 | 完成 |
+|------|---------|----------|------|
+| 目标卡片 + 统计 + 向上之路 | 自由文字聊天 | 5 分钟倒计时 | 庆祝 + 继续学习 |
 
----
+## 技术栈
 
-## 我们平时聊什么？
+### Android 前端
+- **语言**: Kotlin
+- **UI**: Jetpack Compose + Material 3
+- **架构**: ViewModel + mutableStateOf
+- **网络**: Retrofit + OkHttp + Gson
+- **本地存储**: SharedPreferences
 
-- 🤯 "如果用 AI 做 XX 会怎样……"
-- 🧪 刚跑出来的奇怪实验结果
-- 💀 翻车了但学到东西的项目
-- ✨ 突然灵光一现的半成品想法
-- 🛠️ 你最近在用 AI 搞的任何东西
+### 后端
+- **框架**: FastAPI + LangGraph
+- **语言**: Python 3.11
+- **AI 模型**: DeepSeek V3 (via OpenAI-compatible API)
+- **部署**: 阿里云 ECS + systemd
 
-**没有废话，没有 ppt，只有真实的折腾。**
-
----
-
-## 谁可以加入？
+## 项目结构
 
 ```
-if 你对AI感兴趣:
-    加入我们  # 就这一个条件
+app/src/main/java/com/example/studybuddy/
+├── MainActivity.kt                 # 导航主入口
+├── data/
+│   ├── ApiService.kt              # API 接口定义 + Retrofit 客户端
+│   ├── Models.kt                  # 数据模型
+│   └── PrefsManager.kt           # 本地存储管理
+├── viewmodel/
+│   └── StudyViewModel.kt          # 状态管理 + 业务逻辑
+└── ui/
+    ├── theme/
+    │   ├── Color.kt              # 配色方案（浅色 + 深色）
+    │   ├── Theme.kt              # Material 3 主题
+    │   └── Type.kt               # 字体层级
+    └── screens/
+        ├── GoalScreen.kt         # 目标设置（首次使用）
+        ├── HomeScreen.kt         # 首页
+        ├── StateScreen.kt        # 状态选择
+        ├── SuggestionScreen.kt   # AI 对话
+        ├── FocusScreen.kt        # 5 分钟专注计时
+        ├── CompleteScreen.kt     # 完成庆祝
+        ├── ClimbingTrail.kt      # 向上之路组件
+        ├── HistoryScreen.kt      # 历史记录
+        └── SettingsScreen.kt     # 设置
 ```
 
-| 不需要 | 需要 |
-|--------|------|
-| 会写代码 | 好奇心 ✅ |
-| 有成熟的项目 | 敢于折腾 ✅ |
-| 大厂背景 | 想把想法做出来 ✅ |
-| 任何其他门槛 | 就这些了 ✅ |
+## 后端 API
 
-代码大神欢迎，刚入门的小白更欢迎。**这里没有人会嘲笑你的问题，只会一起研究怎么解决它。**
+| 方法 | 端点 | 说明 |
+|------|------|------|
+| POST | `/api/session/start` | 启动督促会话，AI 分析状态并生成建议 |
+| POST | `/api/session/feedback` | 提交用户反馈（started/refused/postponed） |
+| POST | `/api/goal` | 保存/更新学习目标 |
+| GET | `/api/goal/{user_id}` | 获取学习目标 |
+| GET | `/api/history/{user_id}` | 获取历史记录 |
+| POST | `/api/chat` | AI 自由对话 |
+| GET | `/health` | 健康检查 |
 
----
+## 用户流程
 
-## 怎么加入？
+```
+首次使用 → 设置目标 → 首页
+                        ↓
+                    准备开始
+                        ↓
+                  选择当前状态
+                        ↓
+               AI 对话引导（1-3 轮）
+                        ↓
+                  点击「我开始了」
+                        ↓
+                  5 分钟专注计时
+                        ↓
+                    完成页面
+                   ↙        ↘
+            继续学习          今天就到这里
+          （后台计时）          （回到首页）
+```
 
-发邮件到 📮 **hi@daijiaobu.com**，带上这三样东西：
+## 本地运行
 
-> 1. 你的 GitHub 地址（哪怕只有一个 Hello World）
-> 2. 一段自我介绍（随便写，说说你是谁、对什么感兴趣）
-> 3. 你的邮箱
+### 前端
+1. 用 Android Studio 打开项目
+2. 修改 `ApiService.kt` 中的 `BASE_URL` 为你的后端地址
+3. 运行到模拟器或真机
 
-收到后我们会尽快拉你进来 🎉
+### 后端
+1. 安装依赖：`pip install fastapi uvicorn langchain-openai langgraph python-dotenv`
+2. 创建 `.env` 文件：
+   ```
+   LLM_API_KEY=你的API密钥
+   LLM_BASE_URL=https://api.deepseek.com/v1
+   LLM_MODEL_NAME=deepseek-chat
+   ```
+3. 启动：`uvicorn main:app --host 0.0.0.0 --port 8000`
 
----
+## License
 
-## 为什么是 think2do？
-
-我们相信，这个时代最不缺的是想法，最稀缺的是**真正动手去做的人**。
-
-AI 正在把"做到"的门槛降到前所未有的低——
-一个人、一台电脑、一个脑洞，就可能做出以前需要整个团队才能做的东西。
-
-**think2do 存在的意义，就是让更多人跨过那道"想想而已"的门槛。**
-
-不管你的想法多荒唐、多小、多不成熟——
-在这里，它都值得被做出来。
-
-> *The best time to start was yesterday. The second best time is now.*
-
----
-
-<div align="center">
-
-用 🤖 + ☕ + 无数个深夜 构建中
-
-**think2do community**
-
-</div>
+MIT
